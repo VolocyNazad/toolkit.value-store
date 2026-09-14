@@ -3,29 +3,29 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![VolocyNazad](https://img.shields.io/badge/VolocyNazad-blue.svg)](https://github.com/VolocyNazad)
 
-> Файловый DI-стор настроек с YAML-сериализацией и уведомлениями об изменениях.
+> A file-backed DI settings store with YAML serialization and change notifications.
 
-Toolkit.ValueStore — сервис хранения типизированных настроек в файле (по умолчанию YAML) с атомарной записью, опциональным отслеживанием внешних изменений файла и оповещением подписчиков. **Не зависит от Revit API** — несмотря на происхождение (выделен из `revit.linter`), это обычная .NET-библиотека, пригодная для любого приложения.
+Toolkit.ValueStore — a service for storing typed settings in a file (YAML by default), with atomic writes, optional tracking of external file changes, and subscriber notifications. **Does not depend on the Revit API** — despite its origin (extracted from `revit.linter`), it's a regular .NET library suitable for any application.
 
-## Возможности
+## Features
 
 - `IValueStore<T>` — `CurrentValue`, `Update(Action<T> change)`, `OnChange(Action<T> listener)`.
-- Персистентность в файл (сериализатор по умолчанию — `YamlValueStoreSerializer`, заменяем через `IValueStoreSerializer`).
-- Атомарная запись (временный файл + `File.Replace`) и устойчивость к временно заблокированному файлу (retry с паузой).
-- Опциональное отслеживание внешних изменений файла (`FileSystemWatcher` + поллинг) с уведомлением подписчиков через `OnChange`.
-- `IValueStoreNotificationSource.OnLoadFailed` — уведомления об ошибках загрузки/десериализации, с replay последней ошибки новым подписчикам.
-- Имя файла настраивается через `[StoreFile("name.yml")]` на классе настроек либо через `ValueStoreOptions.FileNameFactory`.
-- Регистрация в DI одной строкой: `AddValueStore(...)` / `AddValueStore<TSerializer>(...)`.
+- Persistence to a file (the default serializer is `YamlValueStoreSerializer`, swappable via `IValueStoreSerializer`).
+- Atomic writes (temp file + `File.Replace`) and resilience to a temporarily locked file (retry with a pause).
+- Optional tracking of external file changes (`FileSystemWatcher` + polling) with subscriber notification via `OnChange`.
+- `IValueStoreNotificationSource.OnLoadFailed` — notifications about load/deserialization errors, replaying the last error to new subscribers.
+- The file name is configurable via `[StoreFile("name.yml")]` on the settings class, or via `ValueStoreOptions.FileNameFactory`.
+- One-line DI registration: `AddValueStore(...)` / `AddValueStore<TSerializer>(...)`.
 
-## Установка
+## Installation
 
 ```
 dotnet add package VolocyNazad.ValueStore
 ```
 
-## Использование
+## Usage
 
-Регистрация в DI:
+DI registration:
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +41,7 @@ services.AddValueStore<YamlValueStoreSerializer>(options =>
 });
 ```
 
-Настройки и использование:
+Settings and usage:
 
 ```csharp
 using Toolkit.ValueStore.Abstractions;
@@ -58,7 +58,7 @@ public sealed class MyService(IValueStore<MySettings> store)
 }
 ```
 
-Обработка ошибок загрузки файла (например, битый YAML):
+Handling file load errors (e.g. malformed YAML):
 
 ```csharp
 using Toolkit.ValueStore.Abstractions;
@@ -72,11 +72,20 @@ public sealed class SettingsErrorNotifier(IValueStoreNotificationSource source) 
 }
 ```
 
-## Требования
+## Requirements
 
-- .NET SDK 10.0.103+ (см. `global.json`)
-- `net48` или `net8.0-windows`
+- .NET SDK 10.0.103+ (see `global.json`)
+- `net48` or `net8.0-windows`
 
-## Лицензия
+## License
 
-MIT, см. [LICENSE.md](LICENSE.md).
+MIT, see [LICENSE.md](LICENSE.md).
+
+## Development documentation
+
+- [Development policy](docs/policies/development.md)
+- [Repository guide and technology stack](docs/repository.md)
+
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes.
