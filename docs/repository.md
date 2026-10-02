@@ -63,3 +63,5 @@ The root `.editorconfig` defines the portable formatting baseline. Existing repo
 ## Versioning and release tags
 
 The library uses MinVer 8 with stable tags in the `MAJOR.MINOR.PATCH` format and no `v` prefix. The tag is also the NuGet package version; it is not coupled to a Revit year. Manual publishing accepts exactly one matching tag at HEAD and verifies the package ID and version before pushing to NuGet.
+
+The tagged commit must already contain the release section in `CHANGELOG.md` with an empty `Unreleased` section above it; the publish workflow stops otherwise. See the [release changelog policy](policies/development.md#release-changelog).
