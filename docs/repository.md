@@ -17,9 +17,11 @@ with hot-reload.
 
 ```
 .
+├── Directory.Packages.props           central package versions
 ├── src/
 │   └── Toolkit.ValueStore/            the library
 └── tests/
+    ├── Directory.Packages.props       test-only package versions
     └── Toolkit.ValueStore.Tests/
 ```
 
@@ -34,7 +36,7 @@ with hot-reload.
 - MinVer (plain git-tag-based semantic versioning), PolySharp (polyfills
   for net48)
 - Tests: xunit.v3 + coverlet.collector + Microsoft.Extensions.DependencyInjection
-- Package versions are set directly on each `PackageReference`; this repository does not use central package management.
+- Package versions use central package management (`Directory.Packages.props`, `ManagePackageVersionsCentrally=true`); test-only versions live in `tests/Directory.Packages.props`, which imports the root file.
 
 ## Documentation layout
 

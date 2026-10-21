@@ -43,6 +43,9 @@ Keep the root `.editorconfig` in the solution and apply its repository-wide enco
 
 Projects using xUnit v3 4.0 run through Microsoft.Testing.Platform, selected in global.json. CI invokes each headless test project explicitly and treats a run with no discovered tests as a failure. Tests that require a running Revit process use the .RevitTests suffix and are excluded from hosted headless test runs.
 
-## Package version management
+## Central package management
 
-A repository may use central package management or explicit versions in project files. Use one active approach within a repository, remove empty or disabled central package files, and keep versions aligned between projects that serve the same role.
+Keep project package versions in the root `Directory.Packages.props`. Test-only
+packages belong in `tests/Directory.Packages.props`, which imports the root file;
+do not add `Version` attributes to individual `PackageReference` items. Keep
+versions aligned between projects that serve the same role.
