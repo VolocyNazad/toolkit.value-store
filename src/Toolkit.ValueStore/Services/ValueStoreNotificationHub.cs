@@ -10,7 +10,7 @@ internal sealed class ValueStoreNotificationHub : IValueStoreNotificationSource
 
 	public IDisposable OnLoadFailed(Action<ValueStoreLoadFailedEventArgs> listener)
 	{
-		if (listener is null) throw new ArgumentNullException(nameof(listener));
+		Guard.NotNull(listener);
 		ValueStoreLoadFailedEventArgs[] failures;
 		lock (_lock)
 		{

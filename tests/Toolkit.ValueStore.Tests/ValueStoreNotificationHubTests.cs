@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Toolkit.ValueStore.Abstractions;
 using Toolkit.ValueStore.Services;
 
 namespace Toolkit.ValueStore.Tests;
 
+[SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Test names describe the behavior under test.")]
 public sealed class ValueStoreNotificationHubTests
 {
     [Fact]

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -5,6 +6,8 @@ using Toolkit.ValueStore.Abstractions;
 
 namespace Toolkit.ValueStore.Services;
 
+[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The store must keep running after file, watcher or handler failures.")]
+[SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Logging is rare and LoggerMessage delegates would add boilerplate.")]
 internal sealed class FileValueStore<T> : IValueStore<T>, IDisposable where T : class, new()
 {
 	private readonly ILogger<FileValueStore<T>> _logger;
@@ -54,10 +57,10 @@ internal sealed class FileValueStore<T> : IValueStore<T>, IDisposable where T : 
 
 	public IDisposable OnChange(Action<T> listener)
 	{
-		if (listener is null) throw new ArgumentNullException(nameof(listener));
+		Guard.NotNull(listener);
 		lock (_lock)
 		{
-			ThrowIfDisposed();
+			Guard.ThrowIfDisposed(_disposed, this);
 			_changeHandlers.Add(listener);
 		}
 
@@ -69,13 +72,13 @@ internal sealed class FileValueStore<T> : IValueStore<T>, IDisposable where T : 
 
 	public void Update(Action<T> change)
 	{
-		if (change is null) throw new ArgumentNullException(nameof(change));
+		Guard.NotNull(change);
 		T valueForNotification;
 		Action<T>[] handlers;
 
 		lock (_lock)
 		{
-			ThrowIfDisposed();
+			Guard.ThrowIfDisposed(_disposed, this);
 			T snapshot = CloneValue(_value);
 			change(snapshot);
 			string content = _serializer.Serialize(snapshot);
@@ -259,11 +262,6 @@ internal sealed class FileValueStore<T> : IValueStore<T>, IDisposable where T : 
 				_logger.LogError(exception, "A value store change handler failed for {ValueType}", typeof(T));
 			}
 		}
-	}
-
-	private void ThrowIfDisposed()
-	{
-		if (_disposed) throw new ObjectDisposedException(GetType().FullName);
 	}
 
 	private sealed class DisposableCallback(Action action) : IDisposable

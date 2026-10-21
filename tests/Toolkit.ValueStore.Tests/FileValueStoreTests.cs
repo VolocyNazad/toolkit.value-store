@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -7,6 +8,7 @@ using Toolkit.ValueStore.Serialization;
 
 namespace Toolkit.ValueStore.Tests;
 
+[SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Created by the YAML serializer through reflection.")]
 [StoreFile("custom-settings.yml")]
 internal sealed class TestSettings
 {
@@ -14,12 +16,16 @@ internal sealed class TestSettings
     public int Count { get; set; }
 }
 
+[SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Test names describe the behavior under test.")]
+[SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Tests run without a synchronization context.")]
+[SuppressMessage("Performance", "CA1849:Call async methods when in an async method", Justification = "Test setup and cleanup use synchronous file IO deliberately.")]
 public sealed class FileValueStoreTests : IDisposable
 {
     private readonly string _directory = Path.Combine(
         Path.GetTempPath(), $"Toolkit.ValueStore.Tests-{Guid.NewGuid():N}");
 
     [Fact]
+    [SuppressMessage("Globalization", "CA1307:Specify StringComparison for clarity", Justification = "The assertion checks YAML output, not a culture-sensitive match.")]
     public void Update_persists_value_immediately()
     {
         using ServiceProvider provider = CreateProvider();
